@@ -3,10 +3,16 @@ package Math::Business::BollingerBands;
 use strict;
 use warnings;
 
-use version; our $VERSION = qv("1.00");
+use version; our $VERSION = qv("1.3");
 use Carp;
 
 1;
+
+sub recommended {
+    my $class = shift;
+
+    $class->new(20, 2);
+}
 
 sub new { 
     my $class = shift;
@@ -71,7 +77,7 @@ sub insert {
                 my $d = $this->{d};
                 $this->{d} = $d = $d - $old/$N + $new/$N;
 
-                my $k_stddev = $K * sqrt($d);
+                my $k_stddev = $K * ($d<0.000_000_000_6 ? 0 : sqrt($d));
                 $this->{L} = $M - $k_stddev;
                 $this->{U} = $M + $k_stddev;
 
@@ -87,7 +93,7 @@ sub insert {
 
                 $this->{d} = my $d = $sum/$N;
 
-                my $k_stddev = $K * sqrt($d);
+                my $k_stddev = $K * ($d<0.000_000_000_6 ? 0 : sqrt($d));
                 $this->{L} = $M - $k_stddev;
                 $this->{U} = $M + $k_stddev;
             }
@@ -119,7 +125,10 @@ Math::Business::BollingerBands - Technical Analysis: Bollinger Bands
      $bb->set_deviations(2);
 
   # alternatively/equivalently
-  my $bb = new Math::Business::BollingerBands;
+  my $bb = new Math::Business::BollingerBands(20, 2);
+
+  # or to just get the recommended model ... (20, 2);
+  my $bb = Math::Business::BollingerBands->recommended;
 
   my @closing_values = qw(
       3 4 4 5 6 5 6 5 5 5 5 
@@ -130,7 +139,7 @@ Math::Business::BollingerBands - Technical Analysis: Bollinger Bands
   $bb->insert( @closing_values );
   $bb->insert( $_ ) for @closing_values;
 
-  my ($L,$M,$U) = $sma->query;
+  my ($L,$M,$U) = $bb->query;
   if( defined $M ) {
       print "BB: $L < $M < $U.\n";
 
@@ -140,6 +149,10 @@ Math::Business::BollingerBands - Technical Analysis: Bollinger Bands
 
   # you may use this to kick start 
   $bb->start_with( @closes );
+
+=head1 RESEARCHER
+
+The Bollinger Bands were designed by John Bollinger in the 1980s.
 
 =head1 AUTHOR
 

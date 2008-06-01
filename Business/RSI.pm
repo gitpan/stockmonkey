@@ -5,10 +5,16 @@ use warnings;
 use Math::Business::SMA;
 use Math::Business::EMA;
 
-use version; our $VERSION = qv("1.00");
+use version; our $VERSION = qv("1.2");
 use Carp;
 
 1;
+
+sub recommended {
+    my $class = shift;
+
+    $class->new(14);
+}
 
 sub new { 
     my $class = shift;
@@ -141,6 +147,9 @@ Math::Business::RSI - Technical Analysis: Relative Strength Index
   # alternatively/equivilently
   my $rsi = new Math::Business::RSI(14);
 
+  # or to just get the recommended model ... (14)
+  my $rsi = Math::Business::RSI->recommended;
+
   my @closing_values = qw(
       3 4 4 5 6 5 6 5 5 5 5 
       6 6 6 6 7 7 7 8 8 8 8 
@@ -150,7 +159,7 @@ Math::Business::RSI - Technical Analysis: Relative Strength Index
   $rsi->insert( @closing_values );
   $rsi->insert( $_ ) for @closing_values;
 
-  if( defined(my $q = $sma->query) ) {
+  if( defined(my $q = $rsi->query) ) {
       print "RSI: $q.\n";
 
   } else {
@@ -164,6 +173,10 @@ Math::Business::RSI - Technical Analysis: Relative Strength Index
   my $U  = $rsi->query_EMA_U;
   my $D  = $rsi->query_EMA_D;
   my $cy = $rsi->query_cy; # (close yesterday)
+
+=head1 RESEARCHER
+
+The RSI was designed by J. Welles Wilder Jr in 1978.
 
 =head1 Thanks
 
