@@ -4,7 +4,7 @@ use strict;
 use warnings;
 use Math::Business::ATR;
 
-use version; our $VERSION = qv("1.0");
+use version; our $VERSION = qv("1.2");
 use Carp;
 
 1;
@@ -55,23 +55,17 @@ sub insert {
 
             my ($y_high, $y_low, $y_close) = @$y_point;
 
-            my ($PDM, $MDM); ##-------------------------------------------
+            my ($PDM, $MDM) = (0,0);
             my $A = $t_high - $y_high;
             my $B = $y_low  - $t_low;
 
-            if( $A < 0 and $B < 0 ) {
-                $MDM = $PDM = 0;
-
-            } elsif( $A > $B ) {
+            if( $A > 0 and $A > $B ) {
                 $PDM = $A;
                 $MDM = 0;
 
-            } elsif( $A < $B ) {
+            } elsif( $B > 0 and $B > $A ) {
                 $PDM = 0;
                 $MDM = $B;
-
-            } else {
-                die "hrm, unexpected if-block failure A=$A; B=$B";
             }
 
             if( defined(my $pdm = $this->{aPDM}) ) {
@@ -85,13 +79,19 @@ sub insert {
 
                 my $ATR = $atr->query;
 
-                my $PDI = $this->{PDI} = $aPDM / $ATR;
-                my $MDI = $this->{MDI} = $aMDM / $ATR;
+                if( $ATR == 0 ) {
+                    my $DX = $this->{PDI} = $this->{MDI} = 0;
+                    $this->{ADX} = $R * $this->{ADX} + $R1 * $DX;
 
-                my $DI = abs( $PDI - $MDI );
-                my $DX = $DI / ($PDI + $MDI);
+                } else {
+                    my $PDI = $this->{PDI} = $aPDM / $ATR;
+                    my $MDI = $this->{MDI} = $aMDM / $ATR;
 
-                $this->{ADX} = $R * $this->{ADX} + $R1 * $DX;
+                    my $DI = abs( $PDI - $MDI );
+                    my $DX = $DI / ($PDI + $MDI);
+
+                    $this->{ADX} = $R * $this->{ADX} + $R1 * $DX;
+                }
 
             } else {
                 my $p;
@@ -110,14 +110,18 @@ sub insert {
                     my $aMDM = $this->{aMDM} = $msum / $N;
 
                     my $ATR = $atr->query;
+                    if( $ATR == 0 ) {
+                        $this->{PDI} = $this->{MDI} = $this->{ADX} = 0;
 
-                    my $PDI = $this->{PDI} = $aPDM / $ATR;
-                    my $MDI = $this->{MDI} = $aMDM / $ATR;
+                    } else {
+                        my $PDI = $this->{PDI} = $aPDM / $ATR;
+                        my $MDI = $this->{MDI} = $aMDM / $ATR;
 
-                    my $DI = abs( $PDI - $MDI );
-                    my $DX = $DI / ($PDI + $MDI);
+                        my $DI = abs( $PDI - $MDI );
+                        my $DX = $DI / ($PDI + $MDI);
 
-                    $this->{ADX} = $DX; # is this right?  No idea...  I assume this is well documented in his book
+                        $this->{ADX} = $DX; # is this right?  No idea...  I assume this is well documented in his book
+                    }
 
                 } else {
                     push @{$this->{_p}}, $PDM;
@@ -134,21 +138,17 @@ sub insert {
 
 sub start_with {
     my $this = shift;
+    croak "you must provide: (aPDM, aMDM, aDX)" unless @_ == 3;
 
-    die; # TODO
+    $this->{aPDM} = shift;
+    $this->{aMDM} = shift;
+    $this->{ADX}  = shift;
 }
 
-sub query_pdi {
-    my $this = shift;
-
-    return $this->{PDI};
-}
-
-sub query_mdi {
-    my $this = shift;
-
-    return $this->{MDI};
-}
+sub query_pdi  { my $this = shift; return $this->{PDI}; }
+sub query_mdi  { my $this = shift; return $this->{MDI}; }
+sub query_apdm { my $this = shift; return $this->{aPDM} }
+sub query_amdm { my $this = shift; return $this->{aMDM} }
 
 sub query {
     my $this = shift;
@@ -201,11 +201,32 @@ Math::Business::DMI - Technical Analysis: Directional Movement Index (aka ADX)
   }
 
   # you may use this to kick start 
-  $dmi->start_with( blah blah blah ); # TODO
+  $dmi->start_with($aPDM, $aMDM, $adx;
+
+  # aPDM and aMDM are internals, to fetch them, use these
+  my $aPDM = $dmi->query_apdm;
+  my $aMDM = $dmi->query_amdm;
 
 =head1 RESEARCHER
 
 The ADX/DMI was designed by J. Welles Wilder Jr circa 1978.
+
+The +DI and -DI signals measure the force of directional changes.  When the
++DI crosses above the -DI it may indicate that it's time to buy and when
+the -DI crosses above the +DI it may be time to sell.
+
+The ADX tries to combine the two.  It may indicate the strength of the
+current trend (but not it's direction).  When it moves above 20 it may be
+the beginning of a trend and when it falls below 40, it may be the end of
+it.
+
+The DMI uses the ATR to try to measure volatility.
+
+NOTE: The +DI, -DI and ADX returned by this module are probabilities ranging
+from 0 to 1.  Most sources seem to show the DMI values as numbers from 0 to
+100.  Simply multiply the three touple by 100 to get this result.
+
+    my @DMI = map { 100*$_ } = $dmi->query;
 
 =head1 AUTHOR
 
