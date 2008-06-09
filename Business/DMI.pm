@@ -2,10 +2,11 @@ package Math::Business::DMI;
 
 use strict;
 use warnings;
-use Math::Business::ATR;
-
-use version; our $VERSION = qv("1.2");
 use Carp;
+
+our $VERSION = 2.1;
+
+use Math::Business::ATR;
 
 1;
 

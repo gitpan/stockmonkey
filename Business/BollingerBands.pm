@@ -2,9 +2,9 @@ package Math::Business::BollingerBands;
 
 use strict;
 use warnings;
-
-use version; our $VERSION = qv("1.3");
 use Carp;
+
+our $VERSION = 2.1;
 
 1;
 

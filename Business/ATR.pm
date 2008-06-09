@@ -2,9 +2,9 @@ package Math::Business::ATR;
 
 use strict;
 use warnings;
-
-use version; our $VERSION = qv("1.0");
 use Carp;
+
+our $VERSION = 2.1;
 
 1;
 

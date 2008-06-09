@@ -2,10 +2,10 @@ package Math::Business::MACD;
 
 use strict;
 use warnings;
-
-use version; our $VERSION = qv('2.1');
-
 use Carp;
+
+our $VERSION = 2.1;
+
 use Math::Business::EMA;
 
 1;
@@ -71,7 +71,7 @@ sub query_histogram {
     my $m = $this->query;
     my $t = $this->query_trig_ema;
 
-    return unless $m and $t;
+    return unless defined($m) and defined($t);
     return $m - $t;
 }
 
@@ -82,6 +82,13 @@ sub query {
     my $s = $this->query_slow_ema;
 
     return unless defined($f) and defined($s);
+    if( wantarray ) {
+        my $m = $f-$s;
+        my $t = $this->query_trig_ema; return unless defined $t;
+        my $h = $m-$t;
+
+        return ( $m, $f, $s, $t, $h );
+    }
     return $f - $s;
 }
 
@@ -95,7 +102,6 @@ sub insert {
         $this->{fast_EMA}->insert($value);
 
         my $m = $this->query;
-
         $this->{trig_EMA}->insert( $m ) if defined($m);
     }
 }
@@ -124,20 +130,24 @@ Math::Business::MACD - Technical Analysis: Moving Average Convergence/Divergence
   # or to just get the recommended model ... (26,12,9)
   my $macd = Math::Business::MACD->recommended;
 
-  my @closing_values = qw(
-      3 4 4 5 6 5 6 5 5 5 5 
-      6 6 6 6 7 7 7 8 8 8 8 
-  );
+  my @closing_values = map { 3+ int rand 27 } 1 .. $slow+$fast;
 
   # choose one:
-  $macd->insert( @closing_vlaues );
+  $macd->insert( @closing_values );
   $macd->insert( $_ ) for @closing_values;
 
-  print "       MACD: ", $macd->query,           "\n",
+  print "       MACD: ", scalar $macd->query,    "\n",
         "Trigger EMA: ", $macd->query_trig_ema,  "\n",
         "   Fast EMA: ", $macd->query_fast_ema,  "\n",
         "   Slow EMA: ", $macd->query_slow_ema,  "\n";
         "  Histogram: ", $macd->query_histogram, "\n";
+
+  my @macd = $macd->query;
+  # $macd[0] is the MACD
+  # $macd[1] is the Fast
+  # $macd[2] is the Slow
+  # $macd[3] is the Trigger
+  # $macd[4] is the Histogram
 
 To avoid recalculating huge lists when you add a few new values on the end:
 
