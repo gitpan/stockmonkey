@@ -4,7 +4,7 @@ use strict;
 use warnings;
 use Carp;
 
-our $VERSION = 2.1;
+our $VERSION = 2.2;
 
 use Math::Business::SMA;
 use Math::Business::EMA;
@@ -26,12 +26,22 @@ sub new {
         cy  => undef,
     }, $class;
 
-    my $days = shift;
-    if( defined $days ) {
-        $this->set_days( $days );
+    my $alpha = shift;
+    if( defined $alpha ) {
+        $this->set_alpha( $alpha );
     }
 
     return $this;
+}
+
+sub set_alpha {
+    my $this  = shift;
+    my $alpha = shift;
+
+    my $days = 2*$alpha - 1;
+
+    eval { $this->set_days( $days ) };
+    croak "set_alpha() is basically set_days(2*$alpha-1), which complained: $@" if $@;
 }
 
 sub set_standard {
@@ -180,22 +190,31 @@ Math::Business::RSI - Technical Analysis: Relative Strength Index
 The RSI was designed by J. Welles Wilder Jr in 1978.
 
 According to Wilder, a security is "overbought" it the RSI reaches an upper
-bound of 0.70 and is "oversold" when it moves below 0.30.  Some sources also
+bound of 70 and is "oversold" when it moves below 30.  Some sources also
 use thresholds of 80 and 20.
 
 Therefore, moving above the upper threshold is a selling signal, whlie moving
 below the lower threshold is a signal to buy.
 
-NOTE: The result returned by this RSI module is a probability ranging from 0 to
-1.  Most sources seem to show the RSI as a number ranging from 0 to 100.  If
-you wish to have this effect Simply multiply the numbers by 100 to get this
-result.
+=head2 Cutler
 
-    my $rsi = 100 * $rsi->query;
+There are differing schools of thought on how to calculate this and how
+important it is to stick to precisely the formula Wilder used.  Cutler used
+simple moving averages instead of exponential moving averages.
+
+You can switch between Wilder and Cutler mode with these:
+
+    $rsi->set_cutler; # for simple moving averages
+    $rsi->set_standard; # for exponential moving averages
+
+WARNING: Both of these clear out the value queue!  If you need to track
+both, you'll need two objects. 
 
 =head1 Thanks
 
-Todd Litteken PhD <cl@xganon.com> 
+Todd Litteken <cl@xganon.com> 
+
+Amit Dutt <amit_dutt@hotmail.com>                                                                                       
 
 =head1 AUTHOR
 
