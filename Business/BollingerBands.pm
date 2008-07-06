@@ -4,7 +4,7 @@ use strict;
 use warnings;
 use Carp;
 
-our $VERSION = 2.3;
+our $VERSION = 2.4;
 
 1;
 
@@ -101,8 +101,6 @@ sub insert {
     }
 }
 
-*start_with = *insert;
-
 sub query {
     my $this = shift;
 
@@ -147,9 +145,6 @@ Math::Business::BollingerBands - Technical Analysis: Bollinger Bands
       print "BB: n/a.\n";
   }
 
-  # you may use this to kick start 
-  $bb->start_with( @closes );
-
 =head1 RESEARCHER
 
 The Bollinger Bands were designed by John Bollinger in the 1980s.
@@ -175,6 +170,9 @@ please let me know.
 
 I normally hang out on #perl on freenode, so you can try to get immediate
 gratification there if you like.  L<irc://irc.freenode.net/perl>
+
+There is also a mailing list with very light traffic that you might want to
+join: L<http://groups.google.com/group/stockmonkey/>.
 
 =head1 COPYRIGHT
 

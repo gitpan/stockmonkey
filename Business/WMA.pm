@@ -1,10 +1,10 @@
-package Math::Business::SMA;
+package Math::Business::WMA;
 
 use strict;
 use warnings;
 use Carp;
 
-our $VERSION = 2.4;
+our $VERSION = 1.1;
 
 1;
 
@@ -12,11 +12,7 @@ sub recommended { croak "no recommendation" }
 
 sub new { 
     my $class = shift;
-    my $this  = bless {
-        val => [],
-        cur => undef,
-        rec => 1,
-    }, $class;
+    my $this  = bless [], $class;
 
     my $days = shift;
     if( defined $days ) {
@@ -30,56 +26,65 @@ sub set_days {
     my $this = shift; 
     my $arg  = int(shift);
 
-    croak "days must be a positive non-zero integer" if $arg <= 0;
-
-    $this->{val} = [];
-    delete $this->{SMA};
-    $this->{days} = $arg;
+    croak "days must be a positive non-zero even integer" if $arg <= 0;
+    @$this = (
+        $arg,
+        ($arg*($arg+1))/2,
+        [],     # the data (we actually need to store it, although we can avoid calculating much of it)
+        undef,  # the sum of the data
+        undef,  # the the last numerator
+        undef,  # the WMA
+    );
 }
 
 sub insert {
     my $this = shift;
-    my $val  = $this->{val};
-    my $N    = $this->{days};
+    my ($N, $D, $dat, $total_m, $numerator_m, $EMA) = @$this;
 
     croak "You must set the number of days before you try to insert" if not defined $N;
 
-    while( defined(my $PM = shift) ) {
-        push @$val, $PM;
+    my $old;
+    while( defined( my $P = shift ) ) {
+        push @$dat, $P;
 
-        if( @$val >= $N ) {
-            if( defined( my $s = $this->{SMA} ) ) {
-                my $old = shift @$val;
-                $this->{SMA} = $s - $old/$N + $PM/$N;
+        if( @$dat > $N ) {
+            $old = shift @$dat;
 
-            } else {
-                my $sum = 0;
-                   $sum += $_ for @$val;
+            $numerator_m = $numerator_m + $P*$N - $total_m;
+                $total_m =     $total_m + $P - $old;
 
-                $this->{SMA} = $sum/$N;
-            }
+        } elsif( @$dat == $N ) {
+            $old = 1;
+            my $x = 1;
+
+            $total_m = $numerator_m = 0;
+
+            $numerator_m += $_ for map {$_*$x++} @$dat;
+                $total_m += $_ for @$dat;
         }
     }
+
+    @$this = ($N, $D, $dat, $total_m, $numerator_m, (defined($old) ? $numerator_m/$D:undef));
 }
 
 sub query {
     my $this = shift;
 
-    return $this->{SMA};
+    return $this->[-1];
 }
 
 __END__
 
 =head1 NAME
 
-Math::Business::SMA - Technical Analysis: Simple Moving Average
+Math::Business::WMA - Technical Analysis: Weighted Moving Average
 
 =head1 SYNOPSIS
 
-  use Math::Business::SMA;
+  use Math::Business::WMA;
 
-  my $avg = new Math::Business::SMA;
-     $avg->set_days(7);
+  my $avg = new Math::Business::WMA;
+     $avg->set_days(8);
 
   my @closing_values = qw(
       3 4 4 5 6 5 6 5 5 5 5 
@@ -99,7 +104,7 @@ Math::Business::SMA - Technical Analysis: Simple Moving Average
 
 For short, you can skip the set_days() by suppling the setting to new():
 
-  my $longer_avg = new Math::Business::SMA(10);
+  my $longer_avg = new Math::Business::WMA(10);
 
 =head1 AUTHOR
 
@@ -127,6 +132,6 @@ Copyright (c) 2008 Paul Miller -- LGPL [Software::License::LGPL_2_1]
 
 perl(1), L<Math::Business::StockMonkey>, L<Math::Business::StockMonkey::FAQ>, L<Math::Business::StockMonkey::CookBook>
 
-L<http://en.wikipedia.org/wiki/Simple_moving_average>
+L<http://www.alanhull.com.au/wma/wma.html>
 
 =cut

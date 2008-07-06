@@ -4,7 +4,7 @@ use strict;
 use warnings;
 use Carp;
 
-our $VERSION = 2.3;
+our $VERSION = 2.4;
 
 use Math::Business::EMA;
 
@@ -31,19 +31,6 @@ sub new {
     }
 
     return $this;
-}
-
-sub start_with {
-    my $this = shift;
-    my ($slow, $fast, $trig) = @_;
-
-    croak "undefined slow ema" unless defined $slow;
-    croak "undefined fast ema" unless defined $fast;
-    croak "undefined trig ema" unless defined $trig;
-
-    $this->{slow_EMA}->start_with($slow);
-    $this->{fast_EMA}->start_with($fast);
-    $this->{trig_EMA}->start_with($trig);
 }
 
 sub set_days {
@@ -149,14 +136,6 @@ Math::Business::MACD - Technical Analysis: Moving Average Convergence/Divergence
   # $macd[3] is the Trigger
   # $macd[4] is the Histogram
 
-To avoid recalculating huge lists when you add a few new values on the end:
-
-  $ema->start_with( 
-      $last_slow_ema,
-      $last_fast_ema,
-      $last_trig_ema,
-  );
-
 =head1 RESEARCHER
 
 The MACD was designed by Gerald Appel in the 1960s.
@@ -179,7 +158,7 @@ situation and vice versa.
 
 =head1 Thanks
 
-David Perry <David.Perry@ca.com>
+David Perry
 
 =head1 AUTHOR
 
@@ -190,6 +169,9 @@ please let me know.
 
 I normally hang out on #perl on freenode, so you can try to get immediate
 gratification there if you like.  L<irc://irc.freenode.net/perl>
+
+There is also a mailing list with very light traffic that you might want to
+join: L<http://groups.google.com/group/stockmonkey/>.
 
 =head1 COPYRIGHT
 

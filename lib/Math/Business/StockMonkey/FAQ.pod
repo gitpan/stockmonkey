@@ -1,3 +1,7 @@
+=head1 NAME
+
+Math::Business::StockMonkey::FAQ - These are indeed frequent questions
+
 =head1 Your ModuleX is wrong, just look at SiteName!
 
 No it isn't.  Well, probably not.  Most of these technical analysis
@@ -36,6 +40,10 @@ calculated academically.
 Sometimes you have to sift through quite a few approximations intended for
 spreadsheet calculations rather than formally correct computations -- that is,
 if anything can be formally "correct" in technical analysis.
+
+Also, post resources, ideas, and comments to the official mailing list:
+
+L<http://groups.google.com/group/stockmonkey/>
 
 =head1 What is Stock Monkey?
 

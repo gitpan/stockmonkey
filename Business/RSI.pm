@@ -4,7 +4,7 @@ use strict;
 use warnings;
 use Carp;
 
-our $VERSION = 2.3;
+our $VERSION = 2.4; # local revision: b
 
 use Math::Business::SMA;
 use Math::Business::EMA;
@@ -38,7 +38,10 @@ sub set_alpha {
     my $this  = shift;
     my $alpha = shift;
 
-    my $days = 2*$alpha - 1;
+    # NOTE: this alpha is different than you might think ... it's really inverse alpha
+    # Wilder uses alpha=14 instead of alpha=(1/14) like you might expect
+
+    my $days = 2*$alpha - 1; # so days is 2*$alpha-1 instead of the expected 2*(1/$alpha)-1
 
     eval { $this->set_days( $days ) };
     croak "set_alpha() is basically set_days(2*$alpha-1), which complained: $@" if $@;
@@ -123,19 +126,6 @@ sub insert {
     $this->{cy} = $close_yesterday;
 }
 
-sub start_with {
-    my $this = shift;
-    my ($U,$D,$cy) = @_;
-
-    $this->{U}->start_with( $U );
-    $this->{D}->start_with( $U );
-    $this->{cy} = $cy;
-}
-
-sub query_EMA_U { my $this = shift; $this->{U}->query }
-sub query_EMA_D { my $this = shift; $this->{D}->query }
-sub query_cy    { my $this = shift; $this->{cy} }
-
 sub query {
     my $this = shift;
 
@@ -178,14 +168,6 @@ Math::Business::RSI - Technical Analysis: Relative Strength Index
       print "RSI: n/a.\n";
   }
 
-  # you may use this to kick start 
-  $rsi->start_with( $U, $D, $cy );
-
-  # you may fetch those values with these
-  my $U  = $rsi->query_EMA_U;
-  my $D  = $rsi->query_EMA_D;
-  my $cy = $rsi->query_cy; # (close yesterday)
-
 =head1 RESEARCHER
 
 The RSI was designed by J. Welles Wilder Jr in 1978.
@@ -198,11 +180,13 @@ Therefore, moving above the upper threshold is a selling signal, whlie moving
 below the lower threshold is a signal to buy.
 
 Oddly, RSI(14) uses a "smoothing period" of 14 days -- referring to an alpha of
-1/14.  This means the EMA[N]u/EMA[N]d has N set to 27!
+1/14.  This means the EMA[N]u/EMA[N]d has N set to 27.  This also means the
+alpha is upside of other alpha you might see.  RSI(14) actually uses an alpha
+of ~0.0714, but set_alpha() takes the inverse to make C<$rsi->set_alpha(14)>
+work.
 
-Therefore, in addition to the usual C<set_days()> there is also a C<set_alpha()>
-(which is used by C<new()>).  C<set_days(27)> is equivelent to C<set_alpha(14)> or
-C<new(14)>.
+If all of the above seems really confusing, no worries: RSI(14) means
+C<set_alpha(14)> (or C<new(14)> and is equivelent to C<set_days(27)>.
 
 =head2 Cutler
 
@@ -233,6 +217,9 @@ please let me know.
 
 I normally hang out on #perl on freenode, so you can try to get immediate
 gratification there if you like.  L<irc://irc.freenode.net/perl>
+
+There is also a mailing list with very light traffic that you might want to
+join: L<http://groups.google.com/group/stockmonkey/>.
 
 =head1 COPYRIGHT
 

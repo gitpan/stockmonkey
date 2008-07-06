@@ -4,7 +4,7 @@ use strict;
 use warnings;
 use Carp;
 
-our $VERSION = 2.3;
+our $VERSION = 2.4;
 
 1;
 
@@ -37,8 +37,8 @@ sub set_days {
     # probably wouldn't have been my first choice, but that's how ATR is defined.
 
     $this->{days} = $arg;
-    $this->{R}  = ($arg-1)/$arg;
-    $this->{R1} = 1/$arg;
+    $this->{R1}  = ($arg-1)/$arg;
+    $this->{R} = 1/$arg;
 }
 
 sub insert {
@@ -59,7 +59,7 @@ sub insert {
                $true_range = $C if $C > $true_range;
 
             if( defined(my $atr = $this->{ATR}) ) {
-                $this->{ATR} = $this->{R} * $atr + $this->{R1} * $true_range;
+                $this->{ATR} = $this->{R1} * $atr + $this->{R} * $true_range;
 
             } else {
                 my $p;
@@ -70,6 +70,7 @@ sub insert {
                        $sum += $true_range;
 
                     $this->{ATR} = $sum / $N;
+                    delete $this->{_p};
 
                 } else {
                     push @{$this->{_p}}, $true_range;
@@ -94,14 +95,6 @@ sub insert {
     }
 
     $this->{y_close} = $y_close;
-}
-
-sub start_with {
-    my $this = shift;
-    croak "you must provide: (yesterday's close, yesterday's ATR)" unless @_ == 2;
-
-    $this->{y_close} = shift;
-    $this->{ATR}     = shift;
 }
 
 sub query {
@@ -148,9 +141,6 @@ Math::Business::ATR - Technical Analysis: Average True Range
       print "ATR: n/a.\n";
   }
 
-  # you may use this to kick start 
-  $atr->start_with( $yesterday_close, $old_atr );
-
 =head1 RESEARCHER
 
 The ATR was designed by J. Welles Wilder Jr circa 1978.
@@ -171,6 +161,9 @@ please let me know.
 
 I normally hang out on #perl on freenode, so you can try to get immediate
 gratification there if you like.  L<irc://irc.freenode.net/perl>
+
+There is also a mailing list with very light traffic that you might want to
+join: L<http://groups.google.com/group/stockmonkey/>.
 
 =head1 COPYRIGHT
 

@@ -1,10 +1,11 @@
-package Math::Business::EMA;
+package Math::Business::HMA;
 
 use strict;
 use warnings;
 use Carp;
+use Math::Business::WMA;
 
-our $VERSION = 2.4;
+our $VERSION = 1.2;
 
 1;
 
@@ -12,11 +13,11 @@ sub recommended { croak "no recommendation" }
 
 sub new { 
     my $class = shift;
-    my $this = bless {
-        EMA => undef,
-        R   => 0,
-        R1  => 0,
-    }, $class;
+    my $this  = bless [
+        undef,
+        undef,
+        undef,
+    ], $class;
 
     my $days = shift;
     if( defined $days ) {
@@ -30,34 +31,26 @@ sub set_days {
     my $this = shift; 
     my $arg  = int(shift);
 
-    croak "days must be a positive non-zero integer" if $arg <= 0;
+    croak "days must be a positive number" if $arg <= 0;
 
-    $this->{R}    = 2.0 / (1.0 + $arg);
-    $this->{R1}   = (1 - $this->{R});
-    $this->{days} = $arg;
+    @$this = (
+        Math::Business::WMA->new(int($arg/2)),
+        Math::Business::WMA->new($arg),
+        Math::Business::WMA->new(int(sqrt($arg))),
+    );
 }
 
 sub insert {
     my $this = shift;
+    my ($po2, $p, $sqp) = @$this;
 
-    croak "You must set the number of days before you try to insert" if not $this->{R};
+    croak "You must set the number of days before you try to insert" unless defined $sqp;
+    while( defined(my $P = shift) ) {
+        $po2->insert($P);
+          $p->insert($P);
 
-    while( defined(my $Yt  = shift) ) {
-        if( defined(my $e = $this->{EMA}) ) {
-            $this->{EMA} = ( $this->{R} * $Yt ) + ( $this->{R1} * $e );
-
-        } else {
-            my ($p,$N);
-            if( ref($p = $this->{_p}) and (($N = @$p) >= $this->{days}-1) ) {
-                my $sum = 0;
-                   $sum += $_ for @$p;
-
-                $this->{EMA} = ( $this->{R} * $Yt ) + ( $this->{R1} * ($sum/$N) );
-                delete $this->{_p};
-
-            } else {
-                push @{$this->{_p}}, $Yt;
-            }
+        if( defined( my $_p = $p->query ) and defined( my $_po2 = $po2->query ) ) {
+            $sqp->insert( 2*$_po2 - $_p );
         }
     }
 }
@@ -65,21 +58,21 @@ sub insert {
 sub query {
     my $this = shift;
 
-    return $this->{EMA};
+    return $this->[-1]->query;
 }
 
 __END__
 
 =head1 NAME
 
-Math::Business::EMA - Technical Analysis: Exponential Moving Average
+Math::Business::HMA - Technical Analysis: Hull Moving Average
 
 =head1 SYNOPSIS
 
-  use Math::Business::EMA;
+  use Math::Business::HMA;
 
-  my $avg = new Math::Business::EMA;
-     $avg->set_days(7);
+  my $avg = new Math::Business::HMA;
+     $avg->set_days(8);
 
   my @closing_values = qw(
       3 4 4 5 6 5 6 5 5 5 5 
@@ -99,7 +92,19 @@ Math::Business::EMA - Technical Analysis: Exponential Moving Average
 
 For short, you can skip the set_days() by suppling the setting to new():
 
-  my $longer_ema = new Math::Business::EMA(10);
+  my $longer_avg = new Math::Business::HMA(10);
+
+=head1 RESEARCHER
+
+The Hull Moving Average was invented Alan Hull circa 1990[?].
+
+An SMA can smooth data fairly well but tends to lag terribly.  The HMA tries to
+smooth data quickly (without the lag) by averaging some weighted moving
+averages (L<Math::Business::WMA>) of itself at various intervals.
+
+=head1 Thanks
+
+John Baker <johnb@listbrokers.com>
 
 =head1 AUTHOR
 
@@ -125,8 +130,8 @@ Copyright (c) 2008 Paul Miller -- LGPL [Software::License::LGPL_2_1]
 
 =head1 SEE ALSO
 
-perl(1), L<Math::Business::EMA>, L<Math::Business::StockMonkey>, L<Math::Business::StockMonkey::FAQ>, L<Math::Business::StockMonkey::CookBook>
+perl(1), L<Math::Business::StockMonkey>, L<Math::Business::StockMonkey::FAQ>, L<Math::Business::StockMonkey::CookBook>
 
-L<http://en.wikipedia.org/wiki/Exponential_moving_average>
+L<http://www.alanhull.com.au/hma/hma.html>
 
 =cut
