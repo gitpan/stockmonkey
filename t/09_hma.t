@@ -4,20 +4,19 @@ use strict;
 
 use Math::Business::HMA;
 
-my $N   = 14;
-my $Dp  = 250;
+my $N    = 14;
+my $Dp   = 250;
 my @data = (map {int(3 + rand 9)} 1 .. $N+$Dp);
-my $hma = Math::Business::HMA->new(14);
+my $hma  = Math::Business::HMA->new(14);
 
-my $min = my $max = $data[0];
-for my $data (@data) {
-    $min = $data if $data < $min;
-    $max = $data if $data > $max;
-}
+my $min =  0;
+my $max = 15;
 
 plan tests => 1*@data;
 
 my $ok = 1;
+my @lt;
+my @std;
 for my $data (@data) {
     $hma->insert($data);
 
