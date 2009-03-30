@@ -1,6 +1,6 @@
 --- #YAML:1.0
 name:               stockmonkey
-version:            2.111
+version:            2.13
 abstract:           ~
 author:  []
 license:            lgpl2
