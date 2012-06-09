@@ -4,7 +4,7 @@ use strict;
 use warnings;
 use Carp;
 
-our $VERSION = 2.5;
+our $VERSION = 2.501;
 
 1;
 
@@ -33,7 +33,7 @@ sub new {
 
 sub set_deviations {
     my $this = shift;
-    my $arg  = int shift;
+    my $arg  = shift;
 
     croak "deviations must be a positive non-zero integer" if $arg <= 0;
     $this->{K} = $arg;
@@ -166,30 +166,16 @@ down.
 Paul Miller C<< <jettero@cpan.org> >>
 
 I am using this software in my own projects...  If you find bugs, please please
-please let me know.
-
-I normally hang out on #perl on freenode, so you can try to get immediate
-gratification there if you like.  L<irc://irc.freenode.net/perl>
-
-There is also a mailing list with very light traffic that you might want to
-join: L<http://groups.google.com/group/stockmonkey/>.
+please let me know.  There is a mailing list with very light traffic that you
+might want to join: L<http://groups.google.com/group/stockmonkey/>.
 
 =head1 COPYRIGHT
 
-Copyright (c) 2010 Paul Miller
+Copyright (c) 2012 Paul Miller
 
 =head1 LICENSE
 
-This module is free software.  You can redistribute it and/or
-modify it under the terms of the Artistic License 2.0.
-
-This program is distributed in the hope that it will be useful,
-but without any warranty; without even the implied warranty of
-merchantability or fitness for a particular purpose.
-
-[This software may have had previous licenses, of which the current maintainer
-is completely unaware.  If this is so, it is possible the above license is
-incorrect or invalid.]
+This is released under the Artistic License. See L<perlartistic>.
 
 =head1 SEE ALSO
 

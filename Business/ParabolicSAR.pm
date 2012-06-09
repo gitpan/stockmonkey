@@ -10,7 +10,7 @@ use constant {
     LP    => 0,
 };
 
-our $VERSION = 1.3;
+our $VERSION = 1.301;
 
 1;
 
@@ -125,10 +125,16 @@ sub insert {
             }
 
         } else {
-            # initialize somehow
-            # (never did find a good description of how to initialize this mess,
+            # circa 2010: initialize somehow
+            # (never did find a good description of how to initialize this mess.
             #   I think you're supposed to tell it how to start)
             # this is the only time we use open/close and it's not even in the definition
+            #
+            # 2011-01-03: I did look this up, it's the "SIP" or significant
+            # point.  It should be the lowest (or the highest) point we have
+            # from our recent-ish data or "long trade" as he calls it.  This'll
+            # do as an approximation of that imo — otherwise we'll have to
+            # start asking for a few days previous trades just to initialize.
 
             $A = $as;
 
@@ -241,30 +247,16 @@ Gustav C<< <gustavf@gmail.com> >>
 Paul Miller C<< <jettero@cpan.org> >>
 
 I am using this software in my own projects...  If you find bugs, please please
-please let me know.
-
-I normally hang out on #perl on freenode, so you can try to get immediate
-gratification there if you like.  L<irc://irc.freenode.net/perl>
-
-There is also a mailing list with very light traffic that you might want to
-join: L<http://groups.google.com/group/stockmonkey/>.
+please let me know.  There is a mailing list with very light traffic that you
+might want to join: L<http://groups.google.com/group/stockmonkey/>.
 
 =head1 COPYRIGHT
 
-Copyright (c) 2010 Paul Miller
+Copyright (c) 2012 Paul Miller
 
 =head1 LICENSE
 
-This module is free software.  You can redistribute it and/or
-modify it under the terms of the Artistic License 2.0.
-
-This program is distributed in the hope that it will be useful,
-but without any warranty; without even the implied warranty of
-merchantability or fitness for a particular purpose.
-
-[This software may have had previous licenses, of which the current maintainer
-is completely unaware.  If this is so, it is possible the above license is
-incorrect or invalid.]
+This is released under the Artistic License. See L<perlartistic>.
 
 =head1 SEE ALSO
 

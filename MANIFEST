@@ -36,3 +36,4 @@ t/08_wma.t
 t/09_hma.t
 t/10_lf.t
 t/11_alf.t
+META.json                                Module JSON meta-data (added by MakeMaker)
