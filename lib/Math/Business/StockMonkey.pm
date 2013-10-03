@@ -1,3 +1,9 @@
+package Math::Business::StockMonkey;
+
+our $VERSION = "2.9400";
+
+1;
+
 =head1 NAME
 
 Math::Business::StockMonkey - Base documentation for the StockMonkey Collection
@@ -31,6 +37,12 @@ L<Math::Business::DMI> - Directional Movement Index (aka ADX)
 
 L<Math::Business::ParabolicSAR> - Parabolic Stop and Reversal
 
+L<Math::Business::CCI> - Commodity Channel Index
+
+L<Math::Business::ConnorRSI> - Connor's 3 tuple average RSI with PriceRank
+
+L<Math::Business::Stochastic> -Stochastic Oscillator
+
 =head1 CONTACT
 
 If you'd like to help, or even just I<suggest> a module, just let me know.
@@ -56,7 +68,7 @@ might want to join: L<http://groups.google.com/group/stockmonkey/>.
 
 =head1 COPYRIGHT
 
-Copyright (c) 2012 Paul Miller
+Copyright © 2013 Paul Miller
 
 =head1 LICENSE
 

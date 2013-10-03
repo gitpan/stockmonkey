@@ -5,8 +5,6 @@ use warnings;
 use Carp;
 use Math::Business::WMA;
 
-our $VERSION = 1.301;
-
 1;
 
 sub recommended { croak "no recommendation" }
@@ -63,6 +61,8 @@ sub query {
 
 __END__
 
+=encoding utf-8
+
 =head1 NAME
 
 Math::Business::HMA - Technical Analysis: Hull Moving Average
@@ -116,7 +116,7 @@ might want to join: L<http://groups.google.com/group/stockmonkey/>.
 
 =head1 COPYRIGHT
 
-Copyright (c) 2012 Paul Miller
+Copyright © 2013 Paul Miller
 
 =head1 LICENSE
 

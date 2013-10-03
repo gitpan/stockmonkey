@@ -4,8 +4,6 @@ use strict;
 use warnings;
 use Carp;
 
-our $VERSION = 2.4101; # local revision: b
-
 use Math::Business::ATR;
 
 1;
@@ -154,6 +152,8 @@ sub query {
 
 __END__
 
+=encoding utf-8
+
 =head1 NAME
 
 Math::Business::DMI - Technical Analysis: Directional Movement Index (aka ADX)
@@ -226,7 +226,7 @@ might want to join: L<http://groups.google.com/group/stockmonkey/>.
 
 =head1 COPYRIGHT
 
-Copyright (c) 2012 Paul Miller
+Copyright © 2013 Paul Miller
 
 =head1 LICENSE
 
