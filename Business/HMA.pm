@@ -7,6 +7,8 @@ use Math::Business::WMA;
 
 1;
 
+sub tag { (shift)->[-1] }
+
 sub recommended { croak "no recommendation" }
 
 sub new {
@@ -15,6 +17,7 @@ sub new {
         undef,
         undef,
         undef,
+        undef
     ], $class;
 
     my $days = shift;
@@ -35,6 +38,8 @@ sub set_days {
         Math::Business::WMA->new(int($arg/2)),
         Math::Business::WMA->new($arg),
         Math::Business::WMA->new(int(sqrt($arg))),
+
+        "HMA($arg)", # tag must be last
     );
 }
 
@@ -56,7 +61,7 @@ sub insert {
 sub query {
     my $this = shift;
 
-    return $this->[-1]->query;
+    return $this->[2]->query;
 }
 
 __END__

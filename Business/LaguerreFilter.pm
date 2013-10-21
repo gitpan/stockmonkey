@@ -6,12 +6,23 @@ use Carp;
 use constant {
     ALPHA  =>  2,
     LENGTH =>  3,
-    F      => -1,
+    F      => -2,
+    TAG    => -1,
 };
 
 1;
 
+sub tag { (shift)->[TAG] }
+
 sub recommended { croak "no recommendation" }
+
+sub dnew {
+    my $class = shift;
+    my $days  = int shift; $days = 4 unless $days > 1;
+    my $this  = $class->new(2/(1+$days));
+
+    return $this;
+}
 
 sub new {
     my $class = shift;
@@ -37,6 +48,8 @@ sub set_days {
     my $alpha = 2/(1+$arg);
     eval { $this->set_alpha( $alpha ) };
     croak "set_days() is basically set_alpha(2/(1+$arg)), which complained: $@" if $@;
+
+    $this->{tag} = "LAG($arg)";
 }
 
 sub set_alpha {
@@ -51,7 +64,11 @@ sub set_alpha {
         0,     # adaptive length
         [],    # adaptive diff history
         undef, # filter
+        undef, # tag
     );
+
+    my $arg = int ( (1/$alpha)*2-1 ); # pretty sure... gah, algebra
+    $this->[TAG] = "LAG($arg)";
 }
 
 sub set_adaptive {

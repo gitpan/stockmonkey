@@ -7,7 +7,7 @@ build_requires:
 configure_requires:
   ExtUtils::MakeMaker: 0
 dynamic_config: 1
-generated_by: 'ExtUtils::MakeMaker version 6.78, CPAN::Meta::Converter version 2.120351'
+generated_by: 'ExtUtils::MakeMaker version 6.78, CPAN::Meta::Converter version 2.132661'
 keywords:
   - ATR
   - bollinger
@@ -25,7 +25,7 @@ keywords:
   - Stochastic
   - ConnorRSI
   - CRSI
-license: open_source
+license: unknown
 meta-spec:
   url: http://module-build.sourceforge.net/META-spec-v1.4.html
   version: 1.4
@@ -39,4 +39,4 @@ requires:
   perl: 5.006001
 resources:
   repository: http://github.com/jettero/stockmonkey
-version: 2.9400
+version: 2.9403
