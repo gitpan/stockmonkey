@@ -1,13 +1,13 @@
 ---
 abstract: unknown
 author:
-  - unknown
+  - 'Paul Miller <jettero@cpan.org>'
 build_requires:
-  ExtUtils::MakeMaker: 0
+  ExtUtils::MakeMaker: '0'
 configure_requires:
-  ExtUtils::MakeMaker: 0
+  ExtUtils::MakeMaker: '0'
 dynamic_config: 1
-generated_by: 'ExtUtils::MakeMaker version 6.78, CPAN::Meta::Converter version 2.132661'
+generated_by: 'ExtUtils::MakeMaker version 6.96, CPAN::Meta::Converter version 2.140640'
 keywords:
   - ATR
   - bollinger
@@ -28,15 +28,16 @@ keywords:
 license: unknown
 meta-spec:
   url: http://module-build.sourceforge.net/META-spec-v1.4.html
-  version: 1.4
+  version: '1.4'
 name: stockmonkey
 no_index:
   directory:
     - t
     - inc
 requires:
-  constant: 1.05
-  perl: 5.006001
+  Math::Business::Stochastic: '0'
+  constant: '1.05'
+  perl: '5.006001'
 resources:
   repository: http://github.com/jettero/stockmonkey
-version: 2.9403
+version: '2.9405'
